@@ -6,8 +6,8 @@ to add to the address book.
 
 It requires user confirmation if E-main had already exist.
 
-[![Build Status](https://travis-ci.org/GoogleCloudPlatform/getting-started-python.svg)](https://travis-ci.org/GoogleCloudPlatform/getting-started-python)
-
+#### python verison 3
+python main.py
 
 ## Useful resources
 
