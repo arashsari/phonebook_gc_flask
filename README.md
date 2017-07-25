@@ -11,4 +11,6 @@ It requires user confirmation if E-main had already exist.
 
 ## Useful resources
 
-* See [https://github.com/GoogleCloudPlatform/getting-started-python](https://github.com/tanrax/flask-contacts)
+* See [Google Cloud Platform](https://github.com/GoogleCloudPlatform/getting-started-python)
+* See [Flask][](http://flask.pocoo.org)
+* See [Flask Sample](https://github.com/tanrax/flask-contacts)
