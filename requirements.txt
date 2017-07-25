@@ -1,0 +1,5 @@
+Flask==0.12.1
+google-cloud==0.24.0
+gunicorn==19.7.1
+oauth2client==4.0.0
+six==1.10.0

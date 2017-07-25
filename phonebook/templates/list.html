@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}View{% endblock %}
+{% block content %}
+<h1>Contacts</h1>
+<table class="table table-hover">
+	<thead>
+		<tr>
+			<th scope="col">Name</th>
+			<th scope="col">E_Mail</th>
+			<td></td>
+		</tr>
+	</thead>
+	<tbody>
+	{% for contact in contacts %}
+		<tr>
+			<td>{{ contact.name }}</td>
+			<td>{{ contact.email }}</td>
+			<td class="text-right">
+				<div class="row">
+					<form action="{{ url_for('crud.delete', id=contact.id) }}" method="post" class="pull-right">
+						<input type="hidden" name="id" value="{{ contact.id }}">
+						<input type="submit" class="btn btn-danger" data-toggle="confirmation" {# data-title="Sure?" #} value="Delete">
+					</form>
+					<a class="btn btn-primary pull-right" href="{{ url_for('crud.edit', id=contact.id) }}">Edit</a>
+				</div>
+			</td>
+		</tr>
+	{% endfor %}
+	</tbody>
+</table>
+{% endblock %}
+
+
+

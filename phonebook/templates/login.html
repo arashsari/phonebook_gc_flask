@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+	<title> {% block title %}{% endblock %} | Login Page</title>
+	<link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+	<link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet">
+  </head>
+  <body>
+  <div class="container">
+        {% block body %}
+            <div style="text-align: center;padding: 60px 20px 20px 20px;">
+                <h4>Please enter provided username and password</h4>
+                {% if session['logged_in'] %}
+                <p>You're logged in already!</p>
+                {% else %}
+                <form action="/login" method="POST">
+                  <input type="username" name="username" placeholder="Username">
+                  <input type="password" name="password" placeholder="Password">
+                  <input type="submit" class="btn btn-success" value="Log in">
+                </form>
+                {% endif %}
+                </div>
+        {% endblock %}
+  </div>
+  </body>
+</html>
