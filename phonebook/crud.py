@@ -1,23 +1,11 @@
-# Copyright 2015 Google Inc.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
-from phonebook import get_model, oauth2, storage
+# CRUD for upload, add, update and delete contacts into datstore data model
+from phonebook import get_model
 from flask import Blueprint, current_app, redirect, render_template, request, \
-    session, url_for, current_app
-
+    session, url_for
+from werkzeug.exceptions import BadRequest
+import re
 crud = Blueprint('crud', __name__)
-
+CACHED_FILE = None
 @crud.route("/")
 def list():
     token = request.args.get('page_token', None)
@@ -37,27 +25,49 @@ def upload():
     Upload a csv file contains name and Email
     :return: contacts_list
     '''
+    global CACHED_FILE
+    # check extension of uploaded file
     if request.method == 'POST':
         _is_unique = True
         contacts_list = []
         csvdata = request.files.get('csvFile').read().decode().split("\r")
+        _file = request.files
+        if eval(request.form.to_dict(flat=True).get('force')) and CACHED_FILE:
+            for line in CACHED_FILE:
+                _items = line.split(',')
+                if _items and _is_email_valid(_items[1]):
+                    contacts_list.append({
+                        'name': line.split(',')[0],
+                        'email': line.split(',')[1]
+                    })
+            get_model().bulk_create(contacts_list)
+            return redirect(url_for('.list'))
+        if csvdata:
+            CACHED_FILE = csvdata
+        else:
+            return render_template("upload.html", action="Empty or Corrupted File")
+        try:
+            _check_extension(_file.get('csvFile').filename, current_app.config['ALLOWED_EXTENSIONS'])
+        except BadRequest:
+            return render_template("upload.html", action="not allowed extension")
         for line in csvdata:
-            _name, _email = line.split(',')
-            contacts_list.append({
-                'name': _name,
-                'email': _email
-            })
+            _items = line.split(',')
+            if _items and _is_email_valid(_items[1]):
+                contacts_list.append({
+                    'name': line.split(',')[0],
+                    'email': line.split(',')[1]
+                })
 
         for contact in contacts_list:
             if not check_email_uniqueness(contact):
                 _is_unique = False
         if _is_unique:
-            contact = get_model().create(contacts_list)
+            get_model().bulk_create(contacts_list)
         else:
-            return render_template("upload.html", action="Confirmation")
+            return render_template("upload.html", action="Confirming required")
         return redirect(url_for('.list'))
 
-    return render_template("upload.html", action="Add", contact={})
+    return render_template("upload.html", action="Upload", contact={})
 
 @crud.route('/add', methods=['GET', 'POST'])
 def add(force=None):
@@ -67,6 +77,8 @@ def add(force=None):
     '''
     if request.method == 'POST':
         data = request.form.to_dict(flat=True)
+        if not _is_email_valid(data.get('email')):
+            return render_template("form.html", action="Wrong E-mail", contact=data)
         if check_email_uniqueness(data):
                 contact = get_model().create(data)
                 return redirect(url_for('.list'))
@@ -75,7 +87,7 @@ def add(force=None):
             contact = update_existing_contact(data)
             return redirect(url_for('.list'))
         else:
-            return render_template("form.html", action="Confirmation", contact=data)
+            return render_template("form.html", action="Confirming", contact=data)
     return render_template("form.html", action="Add", contact={})
 
 @crud.route('/<id>/edit', methods=['GET', 'POST'])
@@ -135,3 +147,12 @@ def update_existing_contact(data):
         if _email and _email in contact.get('email', None):
             id = contact.get('id')
             return get_model().update(data, id)
+
+def _check_extension(filename, allowed_extensions):
+    if ('.' not in filename or
+            filename.split('.').pop().lower() not in allowed_extensions):
+        raise BadRequest(
+            "{0} has an invalid name or extension".format(filename))
+
+def _is_email_valid(email):
+    return re.search(r'[\w.-]+@[\w.-]+.\w+', email) is not None

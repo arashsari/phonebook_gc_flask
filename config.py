@@ -32,4 +32,4 @@ PROJECT_ID = 't-science-106105'
 # Google Cloud Storage and upload settings.
 CLOUD_STORAGE_BUCKET = 't-science-106105'
 MAX_CONTENT_LENGTH = 8 * 1024 * 1024
-ALLOWED_EXTENSIONS = set(['csv', 'png', 'jpg', 'jpeg', 'gif'])
+ALLOWED_EXTENSIONS = set(['csv', 'pb', 'txt'])

@@ -1,7 +1,7 @@
 # Address book Python on Google Cloud Platform and flask
 
 
-a small address book (capturing just name and email) web application that allows listing of entries, and uploading of a CSV with a list of entries
+An address book (capturing just name and email) web application that allows listing of entries, and uploading of a CSV with a list of entries
 to add to the address book.
 
 It requires user confirmation if E-main had already exist.

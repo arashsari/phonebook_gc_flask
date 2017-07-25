@@ -1,23 +1,20 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h3>{{action}} contact</h3>
+<h3>{{action}}</h3>
 
 <form method="POST" enctype="multipart/form-data">
 
   <div class="form-group">
-    <label for="csvFile">Upload Contacts from CSV file</label>
+    <label for="csvFile">Upload Contacts from file</label>
     <input type="text" hidden name="force" id="force" value="False" class="form-control hidden"/>
     <input type="file" name="csvFile" id="csvFile" class="form-control"/>
   </div>
 
-  <button type="submit" class="btn btn-success">Save</button>
+  <button type="submit" class="btn btn-success" id="upload" name="upload">Upload</button>
 </form>
 
-{% if "Confirmation" in action %}
-  <h4>{{action}} Email Exist</h4>
-
-  <p id="demo"></p>
+{% if "Confirming" in action %}
 
   <script>
 
@@ -26,7 +23,7 @@
 
         if (result == true) {
             document.getElementById("force").value = "True";
-            document.getElementById("save").click();
+            document.getElementById("upload").click();
             return true;
         }
     }
